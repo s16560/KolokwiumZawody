@@ -4,14 +4,16 @@ using KolokwiumZawody.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KolokwiumZawody.Migrations
 {
     [DbContext(typeof(ChampionshipDbContext))]
-    partial class ChampionshipDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200704232924_seed2")]
+    partial class seed2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

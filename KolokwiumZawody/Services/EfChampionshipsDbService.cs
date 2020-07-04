@@ -1,4 +1,5 @@
-﻿using KolokwiumZawody.DTO.Responses;
+﻿using KolokwiumZawody.DTO.Requests;
+using KolokwiumZawody.DTO.Responses;
 using KolokwiumZawody.Exceptions;
 using KolokwiumZawody.Models;
 using Microsoft.EntityFrameworkCore;
@@ -24,11 +25,12 @@ namespace KolokwiumZawody.Services
             if (championship == null) {
                 throw new ChampionshipDoesNotExistException($"Championship with id {id} doesn't exist");
             }
-           
+            
             var championshipTeams = _context.ChampionshipTeams
                                     .Where(c => c.IdChampionship == championship.IdChampionship)
                                     .Include(c => c.Team)
-                                    .OrderBy(c => c.Score).ToList();
+                                    .OrderBy(c => c.Score)
+                                    .ToList();
 
             var result = new List<TeamScoreResponse>();
 
@@ -43,6 +45,50 @@ namespace KolokwiumZawody.Services
             }
    
             return result;
+        }
+
+        public void JoinPlayer(JoinPlayerRequest request, int id)
+        {      
+            var player = _context.Players
+                        .Where(p => p.FirstName == request.firstName)
+                        .Where(p => p.LastName == request.lastName)
+                        .Where(p => p.DateOfBirth == request.birthDate)
+                        .SingleOrDefault();
+
+            //czy gracz istnieje
+            if (player == null) {
+                throw new PlayerDoesNotExistException("Gracz nie istnieje");
+            }
+
+            //czy gracz przypisany do drużyny
+            var playerTeamExist = _context.PlayerTeams
+                            .Any(pt => pt.IdPlayer == player.IdPlayer
+                                && pt.IdTeam == id);
+
+            if (playerTeamExist) {
+                throw new PlayerTeamAlreadyExistException("Gracz jest już przypisany do drużyny");
+            }
+
+            var team = _context.Teams.Where(t => t.IdTeam == id).SingleOrDefault();
+
+            //czy spelnia kryterium wieku
+            var playerAge = (DateTime.Now.Year - request.birthDate.Year);
+
+            if (playerAge > team.MaxAge) {
+                throw new PlayerTooOldException("Gracz zbyt zaawansowany wiekowo");
+            }
+
+            PlayerTeam pt = new PlayerTeam {
+               // IdPlayer = player.IdPlayer,
+               // IdTeam = id,
+                NumOnShirt = request.numOnShirt,
+                Comment = request.comment,
+                Player = player,
+                Team = team      
+            };
+
+            _context.PlayerTeams.Add(pt);
+            _context.SaveChanges();
         }
     }
 }

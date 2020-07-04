@@ -112,6 +112,13 @@ namespace KolokwiumZawody.Models
 
             modelBuilder.Entity<Team>().HasData(teams);
 
+            //players
+            List<Player> players = new List<Player>();
+            players.Add(new Player { IdPlayer = 1, FirstName = "Jan", LastName = "Kowalski", DateOfBirth = new DateTime(2010, 7, 10) });
+            players.Add(new Player { IdPlayer = 2, FirstName = "Kazik", LastName = "Nowak", DateOfBirth = new DateTime(2000, 7, 10) });
+            modelBuilder.Entity<Player>().HasData(players);
+
+
             //championshipsTeams
             List<ChampionshipTeam> championshipsTeams = new List<ChampionshipTeam>();
             championshipsTeams.Add(new ChampionshipTeam
